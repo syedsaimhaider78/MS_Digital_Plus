@@ -1,0 +1,16 @@
+{
+  "name": "MS Digital NET Plus",
+  "short_name": "MS Digital",
+  "description": "High-speed fiber internet powered by GPON (5G) — 24/7 service in Lahore",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#3B1A7A",
+  "theme_color": "#6D28D9",
+  "icons": [
+    { "src": "assets/Images/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },
+    { "src": "assets/Images/favicon-32x32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "assets/Images/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "assets/Images/logo-icon-256w.webp", "sizes": "256x256", "type": "image/webp" }
+  ]
+}
+

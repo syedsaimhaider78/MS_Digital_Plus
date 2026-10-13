@@ -1,0 +1,510 @@
+/* ============================================================
+   MS Digital NET Plus — Packages Overlay
+   Netflix-style full-screen overlay for browsing internet plans
+   ============================================================ */
+
+/* ----- Overlay Container ----------------------------------- */
+.packages-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: linear-gradient(180deg, #1a0a3e 0%, #0d0520 100%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 60px;
+}
+
+.packages-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ----- Close Button ---------------------------------------- */
+.pkg-close {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 10000;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  font-size: 24px;
+  font-family: 'Poppins', sans-serif;
+  transition: var(--transition);
+}
+
+.pkg-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* ----- Featured Banner ------------------------------------- */
+.pkg-featured {
+  width: 100%;
+  max-width: 1200px;
+  margin: 80px auto 40px;
+  padding: 0 24px;
+}
+
+.pkg-featured-inner {
+  background: linear-gradient(135deg, rgba(109, 40, 217, 0.4), rgba(59, 26, 122, 0.6));
+  border-radius: var(--radius-lg);
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 32px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.pkg-featured-info {
+  flex: 1;
+}
+
+.pkg-featured-badge {
+  display: inline-block;
+  background: var(--violet);
+  color: var(--white);
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.pkg-featured-speed {
+  font-size: clamp(3rem, 8vw, 5rem);
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+
+.pkg-featured-speed span {
+  font-size: 0.4em;
+  color: var(--lavender);
+}
+
+.pkg-featured-price {
+  font-size: 1.5rem;
+  color: var(--lavender);
+  margin-top: 8px;
+}
+
+.pkg-featured-price strong {
+  color: var(--white);
+}
+
+.pkg-featured-cta {
+  margin-top: 24px;
+  padding: 16px 40px;
+  border-radius: var(--radius-full);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: var(--royal-violet);
+  color: var(--white);
+  transition: var(--transition);
+  min-height: 48px;
+}
+
+.pkg-featured-cta:hover {
+  background: var(--violet);
+  transform: translateY(-2px);
+}
+
+.pkg-featured-visual {
+  width: 160px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pkg-featured-visual svg {
+  width: 100%;
+  height: auto;
+}
+
+/* ----- Package Rows ---------------------------------------- */
+.pkg-row {
+  max-width: 1200px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
+.pkg-row-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--lavender);
+  margin-bottom: 16px;
+  padding-left: 4px;
+}
+
+.pkg-row-wrapper {
+  position: relative;
+}
+
+.pkg-row-cards {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding: 8px 0;
+}
+
+.pkg-row-cards::-webkit-scrollbar {
+  display: none;
+}
+
+/* Scroll buttons */
+.pkg-scroll-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.8);
+  color: var(--white);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  font-size: 18px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.pkg-row-wrapper:hover .pkg-scroll-btn {
+  opacity: 1;
+}
+
+.pkg-scroll-btn:hover {
+  background: var(--violet);
+}
+
+.pkg-scroll-btn--left {
+  left: -8px;
+}
+
+.pkg-scroll-btn--right {
+  right: -8px;
+}
+
+/* ----- Package Cards --------------------------------------- */
+.pkg-card {
+  flex: 0 0 auto;
+  width: 220px;
+  scroll-snap-align: start;
+  background: linear-gradient(180deg, rgba(109, 40, 217, 0.15) 0%, rgba(59, 26, 122, 0.3) 100%);
+  border-radius: var(--radius-md);
+  padding: 28px 20px;
+  text-align: center;
+  border: 1px solid rgba(139, 92, 246, 0.15);
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.pkg-card:hover {
+  transform: scale(1.06);
+  border-color: rgba(139, 92, 246, 0.4);
+  filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.3));
+}
+
+/* SUPER badge on special cards */
+.pkg-card.super {
+  border-color: rgba(139, 92, 246, 0.3);
+}
+
+.pkg-card.super::before {
+  content: 'SUPER';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--violet);
+  color: var(--white);
+  padding: 2px 14px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.pkg-card-speed {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+
+.pkg-card-unit {
+  font-size: 0.9rem;
+  color: var(--lavender);
+  margin-top: 2px;
+}
+
+.pkg-card-divider {
+  width: 40px;
+  height: 2px;
+  background: var(--violet);
+  margin: 16px auto;
+  border-radius: 2px;
+}
+
+.pkg-card-price {
+  font-size: 1.2rem;
+  color: var(--lavender);
+  margin-top: 12px;
+}
+
+.pkg-card-price strong {
+  color: var(--white);
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.pkg-speedometer {
+  width: 80px;
+  height: 80px;
+  margin: 16px auto 0;
+}
+
+.pkg-speedometer svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ----- Staggered Card Entrance ----------------------------- */
+.pkg-card {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.pkg-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+
+.pkg-card.visible:nth-child(1) { transition-delay: 0ms; }
+.pkg-card.visible:nth-child(2) { transition-delay: 60ms; }
+.pkg-card.visible:nth-child(3) { transition-delay: 120ms; }
+.pkg-card.visible:nth-child(4) { transition-delay: 180ms; }
+.pkg-card.visible:nth-child(5) { transition-delay: 240ms; }
+.pkg-card.visible:nth-child(6) { transition-delay: 300ms; }
+.pkg-card.visible:nth-child(7) { transition-delay: 360ms; }
+.pkg-card.visible:nth-child(8) { transition-delay: 420ms; }
+.pkg-card.visible:nth-child(9) { transition-delay: 480ms; }
+.pkg-card.visible:nth-child(10) { transition-delay: 540ms; }
+
+/* ----- Detail Modal ---------------------------------------- */
+.pkg-detail-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  background: rgba(13, 5, 32, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.pkg-detail-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pkg-detail-backdrop {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+}
+
+.pkg-detail-content {
+  background: linear-gradient(135deg, #2D1260, #1a0a3e);
+  border-radius: var(--radius-lg);
+  padding: 48px;
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  position: relative;
+}
+
+.pkg-detail-speed {
+  font-size: 4rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1;
+}
+
+.pkg-detail-unit {
+  font-size: 1.2rem;
+  color: var(--lavender);
+}
+
+.pkg-detail-price {
+  font-size: 1.5rem;
+  color: var(--lavender);
+  margin-top: 16px;
+}
+
+.pkg-detail-price strong {
+  color: var(--white);
+  font-size: 2rem;
+}
+
+.pkg-detail-features {
+  list-style: none;
+  margin-top: 24px;
+  text-align: left;
+  color: var(--lavender);
+  padding: 0;
+}
+
+.pkg-detail-features li {
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.pkg-detail-features li:last-child {
+  border-bottom: none;
+}
+
+.pkg-detail-features li svg {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 2px;
+}
+
+.pkg-detail-cta {
+  width: 100%;
+  margin-top: 24px;
+  justify-content: center;
+  padding: 14px 32px;
+  border-radius: var(--radius-full);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  background: var(--royal-violet);
+  color: var(--white);
+  transition: var(--transition);
+  min-height: 48px;
+}
+
+.pkg-detail-cta:hover {
+  background: var(--violet);
+  transform: translateY(-2px);
+}
+
+.pkg-detail-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  transition: var(--transition);
+}
+
+.pkg-detail-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
+
+/* ============================================================
+   RESPONSIVE — Overlay
+   ============================================================ */
+@media (max-width: 767px) {
+  .pkg-card {
+    width: 180px;
+  }
+
+  .pkg-featured-inner {
+    padding: 28px 20px;
+  }
+
+  .pkg-featured-visual {
+    width: 120px;
+  }
+
+  .pkg-scroll-btn {
+    display: none;
+  }
+
+  .pkg-detail-content {
+    padding: 32px 24px;
+  }
+
+  .pkg-detail-speed {
+    font-size: 3rem;
+  }
+
+  .pkg-detail-price strong {
+    font-size: 1.6rem;
+  }
+
+  .pkg-featured {
+    margin-top: 70px;
+  }
+}
+
+@media (min-width: 768px) {
+  .pkg-featured-inner {
+    flex-direction: row;
+    text-align: left;
+    padding: 48px;
+    gap: 40px;
+  }
+
+  .pkg-featured-visual {
+    width: 200px;
+  }
+}
