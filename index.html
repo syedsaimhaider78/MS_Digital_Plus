@@ -18,20 +18,20 @@
   <!-- Open Graph -->
   <meta property="og:title" content="MS Digital NET Plus — High-Speed Fiber Internet | Lahore">
   <meta property="og:description" content="Premium high-speed fiber internet powered by GPON (5G) technology. 24/7 support, reliable connectivity. Serving Faisal Town, Lahore.">
-  <meta property="og:image" content="assets/Images/og-image.png">
+  <meta property="og:image" content="https://ms-digital-net-plus.vercel.app/assets/Images/og-image.png">
   <meta property="og:type" content="website">
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MS Digital NET Plus — High-Speed Fiber Internet | Lahore">
   <meta name="twitter:description" content="Premium high-speed fiber internet powered by GPON (5G) technology. 24/7 support, reliable connectivity. Serving Faisal Town, Lahore.">
-  <meta name="twitter:image" content="assets/Images/og-image.png">
+  <meta name="twitter:image" content="https://ms-digital-net-plus.vercel.app/assets/Images/og-image.png">
 
   <!-- Theme Color -->
   <meta name="theme-color" content="#6D28D9">
 
   <!-- Preload Hero Portrait -->
-  <link rel="preload" as="image" type="image/webp" href="assets/Images/owner-portrait-600w.webp">
+  <link rel="preload" as="image" type="image/webp" href="assets/Images/owner-portrait-800w.webp" imagesrcset="assets/Images/owner-portrait-480w.webp 480w, assets/Images/owner-portrait-800w.webp 800w, assets/Images/owner-portrait-1200w.webp 1200w" imagesizes="(max-width: 768px) 340px, 400px">
 
   <!-- Preload Poppins Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -82,7 +82,7 @@
       "opens": "00:00",
       "closes": "23:59"
     },
-    "image": "assets/Images/og-image.png"
+    "image": "https://ms-digital-net-plus.vercel.app/assets/Images/og-image.png"
   }
   </script>
 </head>
@@ -163,10 +163,11 @@
           </div>
         </div>
         <div class="hero-portrait-wrapper">
-          <div class="wifi-pulse">
+          <div class="wifi-pulse" aria-hidden="true"></div>
+          <div class="hero-portrait-card">
             <picture>
-              <source srcset="assets/Images/owner-portrait-400w.webp 400w, assets/Images/owner-portrait-600w.webp 600w, assets/Images/owner-portrait-800w.webp 800w" sizes="(max-width: 768px) 280px, 380px" type="image/webp">
-              <img class="hero-portrait-img" src="assets/Images/owner-portrait.png" alt="Bilawal Younas - Founder and CEO of MS Digital NET Plus" width="600" height="600" loading="eager">
+              <source srcset="assets/Images/owner-portrait-480w.webp 480w, assets/Images/owner-portrait-800w.webp 800w, assets/Images/owner-portrait-1200w.webp 1200w" sizes="(max-width: 768px) 340px, 400px" type="image/webp">
+              <img class="hero-portrait-img" src="assets/Images/owner-portrait-800w.webp" alt="Bilawal Younas - Founder and CEO of MS Digital NET Plus" width="400" height="500" fetchpriority="high">
             </picture>
           </div>
         </div>
@@ -181,8 +182,8 @@
         <div class="about-content">
           <div class="about-portrait reveal-left">
             <picture>
-              <source srcset="assets/Images/owner-portrait-400w.webp 400w, assets/Images/owner-portrait-600w.webp 600w" sizes="(max-width: 768px) 100%, 450px" type="image/webp">
-              <img src="assets/Images/owner-portrait.png" alt="Bilawal Younas" width="600" height="600" loading="lazy">
+              <source srcset="assets/Images/owner-portrait-480w.webp 480w, assets/Images/owner-portrait-800w.webp 800w, assets/Images/owner-portrait-1200w.webp 1200w" sizes="(max-width: 768px) 100vw, 450px" type="image/webp">
+              <img src="assets/Images/owner-portrait-800w.webp" alt="Bilawal Younas" width="600" height="600" loading="lazy">
             </picture>
           </div>
           <div class="about-text reveal-right">
@@ -654,7 +655,8 @@
             <a href="mailto:bilawal.ali1991@gmail.com">bilawal.ali1991@gmail.com</a>
           </div>
         </div>
-        <div class="footer-col">
+        <!-- Footer Follow Us block hidden until real URLs are provided -->
+        <div class="footer-col footer-col-follow" style="display: none;" aria-hidden="true">
           <h4 class="footer-heading">Follow Us</h4>
           <div class="footer-social">
             <!-- Social links -->

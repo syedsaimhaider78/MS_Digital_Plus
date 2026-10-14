@@ -20,40 +20,42 @@ body {
 
 /* ----- Wi-Fi Pulse Rings ----------------------------------- */
 .wifi-pulse {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(120vw, 520px);
+  height: min(120vw, 520px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .wifi-pulse::before,
 .wifi-pulse::after {
   content: '';
   position: absolute;
+  inset: 0;
   border-radius: 50%;
-  border: 2px solid rgba(139, 92, 246, 0.4);
+  border: 2px solid rgba(139, 92, 246, 0.35);
   animation: wifiPulse 3s ease-out infinite;
   pointer-events: none;
 }
 
 .wifi-pulse::before {
-  width: 120%;
-  height: 120%;
+  animation-delay: 0s;
 }
 
 .wifi-pulse::after {
-  width: 150%;
-  height: 150%;
-  animation-delay: 1s;
+  animation-delay: 1.5s;
 }
 
 @keyframes wifiPulse {
   0% {
-    transform: scale(0.8);
-    opacity: 1;
+    transform: scale(0.65);
+    opacity: 0.8;
   }
   100% {
-    transform: scale(1.3);
+    transform: scale(1.05);
     opacity: 0;
   }
 }

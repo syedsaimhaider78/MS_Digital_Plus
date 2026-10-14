@@ -1,6 +1,7 @@
 /**
  * MS Digital NET Plus — Office Slider & Lightbox
- * Coverflow-style slider on desktop, touch-swipe on mobile, fullscreen accessible lightbox.
+ * Coverflow-style slider on desktop (>= 1024px), horizontal scroll-snap track on mobile (< 1024px),
+ * fullscreen accessible lightbox.
  */
 (function () {
   'use strict';
@@ -52,50 +53,115 @@
       }
     ];
 
-    function updateSlides(index) {
-      currentIndex = (index + totalSlides) % totalSlides;
+    function isDesktop() {
+      return window.innerWidth >= 1024;
+    }
 
-      for (var i = 0; i < totalSlides; i++) {
-        var slide = slides[i];
-        slide.classList.remove('active', 'prev', 'next');
-
-        if (i === currentIndex) {
-          slide.classList.add('active');
-          slide.setAttribute('aria-hidden', 'false');
-        } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
-          slide.classList.add('prev');
-          slide.setAttribute('aria-hidden', 'true');
-        } else if (i === (currentIndex + 1) % totalSlides) {
-          slide.classList.add('next');
-          slide.setAttribute('aria-hidden', 'true');
-        } else {
-          slide.setAttribute('aria-hidden', 'true');
-        }
-      }
-
-      // Update dots
+    function updateDots(index) {
       for (var d = 0; d < dots.length; d++) {
-        if (d === currentIndex) {
-          dots[d].classList.add('active');
-          dots[d].setAttribute('aria-selected', 'true');
-        } else {
-          dots[d].classList.remove('active');
-          dots[d].setAttribute('aria-selected', 'false');
+        var isCurrent = d === index;
+        dots[d].classList.toggle('active', isCurrent);
+        dots[d].setAttribute('aria-selected', isCurrent ? 'true' : 'false');
+      }
+    }
+
+    function updateSlides(index, opts) {
+      opts = opts || {};
+      currentIndex = (index + totalSlides) % totalSlides;
+      updateDots(currentIndex);
+
+      if (isDesktop()) {
+        for (var i = 0; i < totalSlides; i++) {
+          var slide = slides[i];
+          slide.classList.remove('active', 'prev', 'next');
+
+          if (i === currentIndex) {
+            slide.classList.add('active');
+            slide.setAttribute('aria-hidden', 'false');
+          } else if (i === (currentIndex - 1 + totalSlides) % totalSlides) {
+            slide.classList.add('prev');
+            slide.setAttribute('aria-hidden', 'true');
+          } else if (i === (currentIndex + 1) % totalSlides) {
+            slide.classList.add('next');
+            slide.setAttribute('aria-hidden', 'true');
+          } else {
+            slide.setAttribute('aria-hidden', 'true');
+          }
+        }
+      } else {
+        // Mobile scroll-snap track
+        for (var m = 0; m < totalSlides; m++) {
+          var s = slides[m];
+          s.classList.remove('prev', 'next');
+          var isCur = m === currentIndex;
+          s.classList.toggle('active', isCur);
+          s.setAttribute('aria-hidden', isCur ? 'false' : 'true');
+        }
+
+        if (opts.scroll) {
+          var targetSlide = slides[currentIndex];
+          if (targetSlide) {
+            var trackPad = (track.clientWidth - targetSlide.offsetWidth) / 2;
+            var targetLeft = targetSlide.offsetLeft - trackPad;
+            track.scrollTo({
+              left: Math.max(0, targetLeft),
+              behavior: (prefersReducedMotion || opts.instant) ? 'auto' : 'smooth'
+            });
+          }
         }
       }
     }
 
-    function goToSlide(index) {
-      updateSlides(index);
+    function goToSlide(index, opts) {
+      var options = opts || { scroll: true };
+      updateSlides(index, options);
     }
 
     function nextSlide() {
-      goToSlide(currentIndex + 1);
+      goToSlide(currentIndex + 1, { scroll: true });
     }
 
     function prevSlide() {
-      goToSlide(currentIndex - 1);
+      goToSlide(currentIndex - 1, { scroll: true });
     }
+
+    // Mobile scroll listener to update dots on swipe/scroll
+    var scrollRafId = null;
+    track.addEventListener(
+      'scroll',
+      function () {
+        if (isDesktop()) return;
+        if (scrollRafId) return;
+
+        scrollRafId = requestAnimationFrame(function () {
+          scrollRafId = null;
+          var trackCenter = track.scrollLeft + track.clientWidth / 2;
+          var closest = 0;
+          var minDist = Infinity;
+
+          for (var i = 0; i < totalSlides; i++) {
+            var s = slides[i];
+            var sCenter = s.offsetLeft + s.offsetWidth / 2;
+            var dist = Math.abs(sCenter - trackCenter);
+            if (dist < minDist) {
+              minDist = dist;
+              closest = i;
+            }
+          }
+
+          if (closest !== currentIndex) {
+            currentIndex = closest;
+            for (var j = 0; j < totalSlides; j++) {
+              var isCur = j === currentIndex;
+              slides[j].classList.toggle('active', isCur);
+              slides[j].setAttribute('aria-hidden', isCur ? 'false' : 'true');
+            }
+            updateDots(currentIndex);
+          }
+        });
+      },
+      { passive: true }
+    );
 
     // Autoplay logic
     function startAutoplay() {
@@ -113,7 +179,7 @@
       }
     }
 
-    // Visibility Observer for Autoplay (Runs only while section is visible in viewport)
+    // Visibility Observer for Autoplay
     if ('IntersectionObserver' in window) {
       var visibilityObserver = new IntersectionObserver(
         function (entries) {
@@ -155,6 +221,24 @@
       startAutoplay();
     });
 
+    track.addEventListener(
+      'touchstart',
+      function () {
+        isPaused = true;
+        stopAutoplay();
+      },
+      { passive: true }
+    );
+
+    track.addEventListener(
+      'touchend',
+      function () {
+        isPaused = false;
+        startAutoplay();
+      },
+      { passive: true }
+    );
+
     // Arrow Buttons
     if (prevBtn) {
       prevBtn.addEventListener('click', function () {
@@ -175,13 +259,13 @@
       dots[b].addEventListener('click', function () {
         var idx = parseInt(this.getAttribute('data-index'), 10);
         if (!isNaN(idx)) {
-          goToSlide(idx);
+          goToSlide(idx, { scroll: true });
           startAutoplay();
         }
       });
     }
 
-    // Keyboard Navigation (Arrow keys on slides and container)
+    // Keyboard Navigation
     container.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
@@ -193,58 +277,6 @@
         startAutoplay();
       }
     });
-
-    // Touch Swipe Support (Mobile)
-    var touchStartX = 0;
-    var touchStartY = 0;
-    var touchEndX = 0;
-    var touchEndY = 0;
-    var isSwiping = false;
-
-    track.addEventListener(
-      'touchstart',
-      function (e) {
-        isPaused = true;
-        stopAutoplay();
-        if (e.touches.length === 1) {
-          touchStartX = e.touches[0].clientX;
-          touchStartY = e.touches[0].clientY;
-          isSwiping = true;
-        }
-      },
-      { passive: true }
-    );
-
-    track.addEventListener(
-      'touchmove',
-      function (e) {
-        if (!isSwiping || e.touches.length !== 1) return;
-        touchEndX = e.touches[0].clientX;
-        touchEndY = e.touches[0].clientY;
-      },
-      { passive: true }
-    );
-
-    track.addEventListener(
-      'touchend',
-      function () {
-        if (!isSwiping) return;
-        isSwiping = false;
-        var diffX = touchEndX - touchStartX;
-        var diffY = touchEndY - touchStartY;
-        // Only trigger if horizontal swipe is greater than vertical movement
-        if (Math.abs(diffX) > 40 && Math.abs(diffX) > Math.abs(diffY)) {
-          if (diffX < 0) {
-            nextSlide();
-          } else {
-            prevSlide();
-          }
-        }
-        isPaused = false;
-        startAutoplay();
-      },
-      { passive: true }
-    );
 
     // Lightbox Functionality
     function openLightbox(index) {
@@ -287,11 +319,21 @@
         slide.addEventListener('click', function () {
           var idx = parseInt(this.getAttribute('data-index'), 10);
           if (!isNaN(idx)) {
-            if (idx === currentIndex) {
-              openLightbox(idx);
+            if (isDesktop()) {
+              if (idx === currentIndex) {
+                openLightbox(idx);
+              } else {
+                goToSlide(idx);
+                startAutoplay();
+              }
             } else {
-              goToSlide(idx);
-              startAutoplay();
+              // On mobile, if this slide is already active, open lightbox; otherwise center it
+              if (idx === currentIndex) {
+                openLightbox(idx);
+              } else {
+                goToSlide(idx, { scroll: true });
+                startAutoplay();
+              }
             }
           }
         });
@@ -343,7 +385,34 @@
       });
     }
 
-    // Initialize
-    updateSlides(0);
+    // ResizeObserver / Resize Handling
+    var wasDesktop = isDesktop();
+    function handleResize() {
+      var nowDesktop = isDesktop();
+      if (nowDesktop !== wasDesktop) {
+        wasDesktop = nowDesktop;
+        if (nowDesktop) {
+          track.scrollLeft = 0;
+          updateSlides(currentIndex);
+        } else {
+          updateSlides(currentIndex, { scroll: true, instant: true });
+        }
+      } else if (!nowDesktop) {
+        // Keep current slide centered on mobile resize
+        updateSlides(currentIndex, { scroll: true, instant: true });
+      }
+    }
+
+    if ('ResizeObserver' in window) {
+      var ro = new ResizeObserver(function () {
+        handleResize();
+      });
+      ro.observe(container);
+    } else {
+      window.addEventListener('resize', handleResize, { passive: true });
+    }
+
+    // Initialize at slide 1 (index 0)
+    updateSlides(0, { scroll: true, instant: true });
   });
 })();
